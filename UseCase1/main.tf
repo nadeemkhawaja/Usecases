@@ -81,40 +81,19 @@ resource "aci_user_security_domain_role" "all" {
   description     = "From Terraform"
 }
 
-resource "aci_rest" "security-domain-1" {
-  path       = "/api/node/mo/uni/tn-Tenant-1/domain-test.json"
-  payload = <<EOF
-{
-    "aaaDomainRef": {
-        "attributes": {
-            "dn": "uni/tn-Tenant-1/domain-test",
-            "name": "test",
-            "status": "created",
-            "rn": "domain-test"
-        },
-        "children": []
-    }
-}
-  EOF
+resource "aci_aaa_domain" "test" {
+  name        = "test"
+  description = "from terraform"
+  annotation  = "aaa_domain_tag"
+  name_alias  = "test"
 }
 
-resource "aci_rest" "security-domain-2" {
-  path       = "/api/node/mo/uni/tn-Tenant-2/domain-test.json"
-  payload = <<EOF
-{
-    "aaaDomainRef": {
-        "attributes": {
-            "dn": "uni/tn-Tenant-2/domain-test",
-            "name": "test",
-            "status": "created",
-            "rn": "domain-test"
-        },
-        "children": []
-    }
-}
-  EOF
+resource "aci_aaa_domain_relationship" "test_relationship_tenant-1" {
+  aaa_domain_dn = resource.aci_aaa_domain.test.id
+  parent_dn     = aci_tenant.Tenant-1.id
 }
 
-
-
-
+resource "aci_aaa_domain_relationship" "test_relationship_tenant-2" {
+  aaa_domain_dn = resource.aci_aaa_domain.test.id
+  parent_dn     = aci_tenant.Tenant-2.id
+}
